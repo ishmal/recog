@@ -1,61 +1,52 @@
-var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition
-var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList
-var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent
 
-var colors = [ 'aqua' , 'azure' , 'beige', 'bisque', 'black', 'blue', 'brown', 'chocolate', 'coral', 'crimson', 'cyan', 'fuchsia', 'ghostwhite', 'gold', 'goldenrod', 'gray', 'green', 'indigo', 'ivory', 'khaki', 'lavender', 'lime', 'linen', 'magenta', 'maroon', 'moccasin', 'navy', 'olive', 'orange', 'orchid', 'peru', 'pink', 'plum', 'purple', 'red', 'salmon', 'sienna', 'silver', 'snow', 'tan', 'teal', 'thistle', 'tomato', 'turquoise', 'violet', 'white', 'yellow'];
-var grammar = '#JSGF V1.0; grammar colors; public <color> = ' + colors.join(' | ') + ' ;'
+//favor the webkit versions
+var SpeechRecognition = webkitSpeechRecognition || SpeechRecognition
+var SpeechGrammarList = webkitSpeechGrammarList || SpeechGrammarList
+var SpeechRecognitionEvent = webkitSpeechRecognitionEvent || SpeechRecognitionEvent
 
-var recognition = new SpeechRecognition();
-var speechRecognitionList = new SpeechGrammarList();
-speechRecognitionList.addFromString(grammar, 1);
-recognition.grammars = speechRecognitionList;
-//recognition.continuous = false;
-recognition.lang = 'en-US';
-recognition.interimResults = false;
-recognition.maxAlternatives = 1;
 
-var diagnostic = document.querySelector('.output');
-var bg = document.querySelector('html');
-var hints = document.querySelector('.hints');
 
-var colorHTML= '';
-colors.forEach(function(v, i, a){
-  console.log(v, i);
-  colorHTML += '<span style="background-color:' + v + ';"> ' + v + ' </span>';
-});
-hints.innerHTML = 'Tap/click then say a color to change the background color of the app. Try '+ colorHTML + '.';
+function setup() {
 
-document.body.onclick = function() {
-  recognition.start();
-  console.log('Ready to receive a color command.');
+  var button = document.querySelector('.startbtn');
+  var output = document.querySelector('.output');
+
+  var csgrammar = '#JSGF 1.0 ISO8559-1;\ngrammar org.pedro.callsign;\npublic <callsign> = <letter>+ <number>+ <letter>+;\n\n<letter> = <a> | <b> | <c> | <d> | <e> | <f> | <g> | <h> | <i> | <j> | <k> |\n  <l> | <m> | <n> | <o> | <p> | <q> | <r> | <s> |\n   <t> | <u> | <v> | <w> | <x> | <y> | <z>;\n\n<a> = a alfa alpha america;\n<b> = b | beta | bravo;\n<c> = c | charlie;\n<d> = d | delta;\n<e> = e | echo;\n<f> = f | fox | foxtrot | florida;\n<g> = g | golf | george;\n<h> = h | hotel;\n<i> = i | india;\n<j> = j | juliet | juliett;\n<k> = k | kilo | kilowatt;\n<l> = l | lima;\n<m> = m | mike;\n<n> = n | nancy | november;\n<o> = o | oscar;\n<p> = p | papa;\n<q> = q | quebec;\n<r> = r | romeo;\n<s> = s | sierra;\n<t> = t | tango;\n<u> = u | uniform;\n<v> = v | victor;\n<w> = w | whiskey | whisky;\n<x> = x | xray | x-ray ;\n<y> = y | yankee;\n<z> = z | zulu | zebra | zanzibar;\n\n<number> = <0> | <1> | <2> | <3> | <4> | <5> | <6> | <7> | <8> | <9>;\n\n<0> = 0 | zero;\n<1> = 1 | one;\n<2> = 2 | two;\n<3> = 3 | three | tree;\n<4> = 4 | four;\n<5> = 5 | five;\n<6> = 6 | six;\n<7> = 7 | seven;\n<8> = 8 | eight;\n<9> = 9 | nine | niner;\n';
+  var recognition = new SpeechRecognition();
+  var speechRecognitionList = new SpeechGrammarList();
+  speechRecognitionList.addFromString(csgrammar, 1);
+  recognition.grammars = speechRecognitionList;
+  //recognition.continuous = false;
+  recognition.lang = 'en-US';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+
+  button.onclick = function() {
+    recognition.start();
+    console.log('Ready to receive a command');
+  }
+
+  recognition.onresult = function(event) {
+    var last = event.results.length - 1;
+    var text = event.results[last][0].transcript;
+
+    output.textContent = 'Result received: ' + text + '.';
+    console.log('Confidence: ' + event.results[0][0].confidence);
+  }
+
+  recognition.onspeechend = function() {
+    recognition.stop();
+  }
+
+  recognition.onnomatch = function(event) {
+    output.textContent = "I didn't recognise that statement.";
+  }
+
+  recognition.onerror = function(event) {
+    output.textContent = 'Error occurred in recognition: ' + event.error + " : " + event.message;
+  }
+
 }
 
-recognition.onresult = function(event) {
-  // The SpeechRecognitionEvent results property returns a SpeechRecognitionResultList object
-  // The SpeechRecognitionResultList object contains SpeechRecognitionResult objects.
-  // It has a getter so it can be accessed like an array
-  // The [last] returns the SpeechRecognitionResult at the last position.
-  // Each SpeechRecognitionResult object contains SpeechRecognitionAlternative objects that contain individual results.
-  // These also have getters so they can be accessed like arrays.
-  // The [0] returns the SpeechRecognitionAlternative at position 0.
-  // We then return the transcript property of the SpeechRecognitionAlternative object
-
-  var last = event.results.length - 1;
-  var color = event.results[last][0].transcript;
-
-  diagnostic.textContent = 'Result received: ' + color + '.';
-  bg.style.backgroundColor = color;
-  console.log('Confidence: ' + event.results[0][0].confidence);
-}
-
-recognition.onspeechend = function() {
-  recognition.stop();
-}
-
-recognition.onnomatch = function(event) {
-  diagnostic.textContent = "I didn't recognise that color.";
-}
-
-recognition.onerror = function(event) {
-  diagnostic.textContent = 'Error occurred in recognition: ' + event.error;
-}
+window.onload = setup;
