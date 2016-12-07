@@ -1,0 +1,50 @@
+
+
+#JSGF 1.0 ISO8559-1;
+grammar org.pedro.callsign;
+
+public <callsign> = <letter>+ <number>+ <letter>+
+
+<letter> = <a> | <b> | <c> | <d> | <e> | <f> | <g> | <h> | <i> | <j> | <k> |
+  <l> | <m> | <n> | <o> | <p> | <q> | <r> | <s> |
+   <t> | <u> | <v> | <w> | <x> | <y> | <z>;
+
+<a> = a alfa alpha america;
+<b> = b | beta | bravo;
+<c> = c | charlie;
+<d> = d | delta;
+<e> = e | echo;
+<f> = f | fox | foxtrot | florida;
+<g> = g | golf | george;
+<h> = h | hotel;
+<i> = i | india;
+<j> = j | juliet | juliett;
+<k> = k | kilo | kilowatt;
+<l> = l | lima;
+<m> = m | mike;
+<n> = n | nancy | november;
+<o> = o | oscar;
+<p> = p | papa;
+<q> = q | quebec;
+<r> = r | romeo;
+<s> = s | sierra;
+<t> = t | tango;
+<u> = u | uniform;
+<v> = v | victor;
+<w> = w | whiskey | whisky;
+<x> = x | xray | x-ray ;
+<y> = y | yankee;
+<z> = z | zulu | zebra | zanzibar;
+
+<number> = <0> | <1> | <2> | <3> | <4> | <5> | <6> | <7> | <8> | <9>;
+
+<0> = 0 | zero;
+<1> = 1 | one;
+<2> = 2 | two;
+<3> = 3 | three | tree;
+<4> = 4 | four;
+<5> = 5 | five;
+<6> = 6 | six;
+<7> = 7 | seven;
+<8> = 8 | eight;
+<9> = 9 | nine | niner;
